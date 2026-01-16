@@ -16,8 +16,6 @@ class Profile(models.Model):
         ]
     )
     
-    def __str__(self):
-        return self.user.username
     
     def save(self, *args, **kwargs):
         # Delete old profile picture when new one is uploaded
@@ -157,4 +155,5 @@ class Notification(models.Model):
         return f"{actor_name} -> {self.recipient.username}: {self.get_type_display()}"
     
     def __str__(self):
+
         return self.message
