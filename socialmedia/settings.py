@@ -155,15 +155,12 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'  # Changed from '/accounts/profile/'
 LOGOUT_REDIRECT_URL = 'login'
 
-# For production, use Redis
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
+
 
 # For development, use in-memory
 # CHANNEL_LAYERS = {
@@ -182,4 +179,5 @@ EMAIL_USE_TLS = True  # Set to True for 587, False for 465
 EMAIL_USE_SSL = False  # Set to True for 465, False for 587
 EMAIL_HOST_USER = 'info.nepixo@gmail.com'  # Your Gmail
 EMAIL_HOST_PASSWORD = 'lpsz rlla vynn kxhd'  # Your App Password
+
 DEFAULT_FROM_EMAIL = 'info.nepixo@gmail.com'
