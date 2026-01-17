@@ -2,18 +2,13 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Authentication
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-    
-    # Main Pages
     path('', views.home_view, name='home'),
     path('profile/<str:username>/', views.profile_view, name='profile'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
     path('search/', views.search_users, name='search'),
-    
-    # Actions
     path('create-post/', views.create_post, name='create_post'),
     path('follow/<str:username>/', views.follow_user, name='follow'),
     path('follow/', views.follow_user, name='follow_user'),  # For AJAX requests
@@ -25,55 +20,35 @@ urlpatterns = [
     path('get-messages/<str:username>/', views.get_messages, name='get_messages'),
     path('delete-post/<int:post_id>/', views.delete_post, name='delete_post'),
     path('forgot-password/', views.forgot_password, name='forgot_password'),
-    
-    # Messages and Notifications
     path('messages/', views.messages_view, name='messages'),
     path('notifications/', views.notifications_view, name='notifications'),
     path('get-conversations/', views.get_conversations, name='get_conversations'),
     path('get-unread-counts/', views.get_unread_counts, name='get_unread_counts'),
     path('mark-messages-read/<str:username>/', views.mark_messages_read, name='mark_messages_read'),
-    
-    # path('mark-all-notifications-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
     path('get-comments/<int:post_id>/', views.get_comments, name='get_comments'),
-    
-    # Real-time features
     path('check-new-messages/<str:username>/', views.check_new_messages, name='check_new_messages'),
     path('typing-indicator/', views.typing_indicator, name='typing_indicator'),
     path('get-typing-status/<str:username>/', views.get_typing_status, name='get_typing_status'),
     path('get-user-info/<str:username>/', views.get_user_info, name='get_user_info'),
     path('check-username/', views.check_username, name='check_username'),
-    
-    # Post editing
     path('edit-post/<int:post_id>/', views.edit_post, name='edit_post'),
-    
-    # API endpoints
     path('api/followers/<str:username>/', views.api_followers, name='api_followers'),
     path('api/following/<str:username>/', views.api_following, name='api_following'),
     path('notifications/', views.notifications_view, name='notifications'),
-  
-    # path('mark-all-notifications-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
     path('follow/<str:username>/', views.follow_user, name='follow_user'),
     path('accept-friend-request/<str:username>/', views.accept_friend_request, name='accept_friend_request'),
     path('decline-friend-request/<str:username>/', views.decline_friend_request, name='decline_friend_request'),
     path('friends/suggestions/', views.friend_suggestions, name='friend_suggestions'),
-      path('accept-friend-request/<str:username>/', views.accept_friend_request, name='accept_friend_request'),
+    path('accept-friend-request/<str:username>/', views.accept_friend_request, name='accept_friend_request'),
     path('decline-friend-request/<str:username>/', views.decline_friend_request, name='decline_friend_request'),
-    
-    # New URLs for post details
     path('post/<int:post_id>/', views.post_detail_view, name='post_detail'),
     path('get-unread-counts/', views.get_unread_counts, name='get_unread_counts'),
     path('mark-notification-read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
     path('mark-all-notifications-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
     path('clear-all-notifications/', views.clear_all_notifications, name='clear_all_notifications'),
-    path('', views.visitor_home, name='visitor_home'),  # Public homepage for non-logged in users
-    path('home/', views.home_view, name='home'),  # Logged-in user home
-    
-    # Keep all other URLs as they are...
+    path('', views.visitor_home, name='visitor_home'),  
+    path('home/', views.home_view, name='home'),  
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
     path('share/<int:post_id>/', views.share_post, name='share_post'),
-    
-    # Note: REMOVED these duplicate lines:
-    # path('follow-user/', views.follow_user, name='follow_user'),
-    # path('unfollow-user/', views.unfollow_user, name='unfollow_user'),
 ]
