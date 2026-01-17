@@ -28,7 +28,7 @@ Instructions:
 If you didn't request this password reset, please ignore this email.
 
 Best regards,
-Quizzer Pro Team
+Nepoxi Team
 '''
     
     try:
@@ -42,4 +42,5 @@ Quizzer Pro Team
         return True
     except Exception as e:
         print(f"Error sending email: {e}")
+
         return False
