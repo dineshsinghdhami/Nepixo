@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,7 @@ SECRET_KEY = 'django-insecure-p0zz)i@xmhk-2jjbw#dpsq)5&w)1%c))$g2z_=^ngf@r7wm_b6
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['nepixo.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -72,20 +72,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'socialmedia.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -103,9 +95,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -114,13 +103,9 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-
 STATIC_URL = 'static/'
 
-import os
+
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
@@ -148,12 +133,12 @@ LOGIN_URL = 'login'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Max upload size: 2MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 2097152  # 2MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 2097152  # 2MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 2097152  
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2097152 
 
 # Login/Logout settings
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'  # Changed from '/accounts/profile/'
+LOGIN_REDIRECT_URL = 'home'  
 LOGOUT_REDIRECT_URL = 'login'
 
 CHANNEL_LAYERS = {
@@ -161,17 +146,6 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
-
-
-# For development, use in-memory
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels.layers.InMemoryChannelLayer"
-#     }
-# }
-
-# settings.py
-
 # Email Configuration for Gmail
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
