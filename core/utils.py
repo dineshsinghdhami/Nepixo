@@ -28,7 +28,7 @@ Instructions:
 If you didn't request this password reset, please ignore this email.
 
 Best regards,
-Quizzer Pro Team
+Nepxio Team
 '''
     
     try:
