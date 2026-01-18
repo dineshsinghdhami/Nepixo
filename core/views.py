@@ -573,8 +573,6 @@ def profile_view(request, username):
         'following_count': following_count
     })
 
-
-# Edit Profile
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
@@ -1241,3 +1239,4 @@ def post_detail_view(request, post_id):
         'comments': comments,
         'user_has_liked': user_has_liked
     })
+
