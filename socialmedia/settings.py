@@ -38,9 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',  # your app
-    'channels',  # for real-time
-    'crispy_forms',  # for nice forms
+    'core',  
+    'channels', 
+    'crispy_forms',  
 ]
 
 MIDDLEWARE = [
@@ -105,17 +105,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-
-
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media files (user uploaded files)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# For real-time features
 ASGI_APPLICATION = 'socialmedia.asgi.application'
 CHANNEL_LAYERS = {
     'default': {
@@ -123,20 +118,17 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Crispy forms template
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-# Login URL
 LOGIN_URL = 'login'
 
-# Email settings (we'll use console for now)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Max upload size: 2MB
+
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2097152  
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2097152 
 
-# Login/Logout settings
+
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'  
 LOGOUT_REDIRECT_URL = 'login'
@@ -146,14 +138,14 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
-# Email Configuration for Gmail
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587  # Use 587 for TLS or 465 for SSL
-EMAIL_USE_TLS = True  # Set to True for 587, False for 465
-EMAIL_USE_SSL = False  # Set to True for 465, False for 587
-EMAIL_HOST_USER = 'info.nepixo@gmail.com'  # Your Gmail
-EMAIL_HOST_PASSWORD = 'lpsz rlla vynn kxhd'  # Your App Password
+EMAIL_PORT = 587  
+EMAIL_USE_TLS = True  
+EMAIL_USE_SSL = False  
+EMAIL_HOST_USER = 'info.nepixo@gmail.com'  
+EMAIL_HOST_PASSWORD = 'lpsz rlla vynn kxhd'  
 
 DEFAULT_FROM_EMAIL = 'info.nepixo@gmail.com'
 
