@@ -604,11 +604,7 @@ def edit_profile(request):
                 messages.error(request, "Unsupported file format. Please upload JPG, PNG, or GIF.")
                 return redirect('edit_profile')
 
-            try:
-                # ... existing image processing code ...
-                # ... keep all the existing image processing logic ...
-                # ... (the cropping and compression code remains the same) ...
-                
+            try:          
                 if 'cropped_image' in request.POST and request.POST['cropped_image']:
                    
                     pass
@@ -1237,5 +1233,6 @@ def post_detail_view(request, post_id):
         'comments': comments,
         'user_has_liked': user_has_liked
     })
+
 
 
