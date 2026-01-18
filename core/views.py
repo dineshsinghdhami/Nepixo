@@ -579,7 +579,6 @@ def edit_profile(request):
         profile = request.user.profile
         profile.bio = request.POST.get('bio', '')
         
-        # Handle first name and last name updates
         if 'first_name' in request.POST:
             new_first_name = request.POST['first_name'].strip()
             if new_first_name and new_first_name != request.user.first_name:
@@ -591,8 +590,7 @@ def edit_profile(request):
             if new_last_name and new_last_name != request.user.last_name:
                 request.user.last_name = new_last_name
                 request.user.save()
-        
-        # Handle profile picture upload (existing code remains the same)
+
         if 'profile_pic' in request.FILES:
             uploaded_file = request.FILES['profile_pic']
             
@@ -612,7 +610,7 @@ def edit_profile(request):
                 # ... (the cropping and compression code remains the same) ...
                 
                 if 'cropped_image' in request.POST and request.POST['cropped_image']:
-                    # ... cropping logic ...
+                   
                     pass
                 else:
                     compressed_file = compress_image(uploaded_file)
@@ -1239,4 +1237,5 @@ def post_detail_view(request, post_id):
         'comments': comments,
         'user_has_liked': user_has_liked
     })
+
 
