@@ -1233,6 +1233,3 @@ def post_detail_view(request, post_id):
         'comments': comments,
         'user_has_liked': user_has_liked
     })
-
-
-
