@@ -16,9 +16,10 @@ class Profile(models.Model):
         ]
     )
     
+    def __str__(self):
+        return self.user.username
     
     def save(self, *args, **kwargs):
-        # Delete old profile picture when new one is uploaded
         try:
             this = Profile.objects.get(id=self.id)
             if this.profile_pic and this.profile_pic != self.profile_pic:
@@ -34,7 +35,6 @@ class Profile(models.Model):
     def following_count(self):
         return Follow.objects.filter(follower=self.user).count()
 
-# Create profile automatically when user is created
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -119,8 +119,8 @@ class Notification(models.Model):
     )
     
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
-    actor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='actor_notifications', null=True, blank=True)  # ADD null=True, blank=True
-    type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='follow')  # ADD default='follow'
+    actor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='actor_notifications', null=True, blank=True) 
+    type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='follow')  
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -154,6 +154,3 @@ class Notification(models.Model):
         actor_name = self.actor.username if self.actor else "Unknown"
         return f"{actor_name} -> {self.recipient.username}: {self.get_type_display()}"
     
-    def __str__(self):
-
-        return self.message
