@@ -12,11 +12,11 @@ def generate_temp_password(length=10):
 
 def send_temp_password_email(user_email, temp_password):
     """Send temporary password to user's email"""
-    subject = 'Your Temporary Password - Quizzer Pro'
+    subject = 'Your Temporary Password - Nepixo'
     message = f'''
 Hello,
 
-You requested a password reset for your Quizzer Pro account.
+You requested a password reset for your Nepixo account.
 
 Your temporary password is: **{temp_password}**
 
@@ -28,7 +28,7 @@ Instructions:
 If you didn't request this password reset, please ignore this email.
 
 Best regards,
-Nepoxi Team
+Nepxio Team
 '''
     
     try:
@@ -42,5 +42,4 @@ Nepoxi Team
         return True
     except Exception as e:
         print(f"Error sending email: {e}")
-
         return False
