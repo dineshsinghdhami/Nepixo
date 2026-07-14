@@ -1,4 +1,4 @@
-# # Nepixo
+# Nepixo
 
 ![License](https://img.shields.io/badge/license-Proprietary-red)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
@@ -6,16 +6,23 @@
 
 **Nepixo** is a simple **social media web application** built using **Django** and **SQLite**, allowing users to share posts, follow others, chat privately, and receive notifications through a clean and intuitive interface.
 
+
 ## # Project Background
 
 During a period when social media platforms were temporarily restricted in Nepal, I created **Nepixo** as an independent web-based platform to stay connected and explore how social networking systems work from the ground up.
 
 This project reflects both a practical solution to a real-world situation and my hands-on experience in building a full-featured social media application from scratch.
 
----
-
 > **Note:** This project is **NOT open source**.  
 > All code, files, and designs are fully protected and may not be copied or reused.
+
+---
+
+## 📸 Screenshot
+
+<p align="center">
+  <img src="static/images/Dashboard.png" alt="Nepixo Dashboard" width="900">
+</p>
 
 ---
 
@@ -58,6 +65,9 @@ Nepixo/
 ├── core/
 ├── socialmedia/
 ├── media/
+├── static/
+│   └── image/
+│       └── dashboard.png
 ├── staticfiles/
 ├── templates/
 ├── manage.py
