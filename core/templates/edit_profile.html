@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile · Nepixo{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/edit_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <header class="settings-heading">
+        <div>
+            <span class="settings-kicker">Account settings</span>
+            <h1>Edit profile</h1>
+            <p>Update your public information, profile picture, and password.</p>
+        </div>
+        <a href="{% url 'profile' user.username %}" class="btn btn-secondary settings-back">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to profile
+        </a>
+    </header>
+
+    <div class="settings-layout">
+        <aside class="settings-sidebar">
+            <section class="card avatar-card">
+                <div class="avatar-card-copy">
+                    <h2>Profile picture</h2>
+                    <p>This picture appears beside your posts, messages, and comments.</p>
+                </div>
+
+                <div class="profile-image-section">
+                    <div class="profile-image-wrapper">
+                        {% if user.profile.profile_pic %}
+                        <img
+                            id="currentProfilePic"
+                            src="{{ user.profile.profile_pic.url }}"
+                            class="profile-image"
+                            alt="{{ user.username }} profile picture"
+                            onclick="document.getElementById('imageUpload').click()"
+                        >
+                        {% else %}
+                        <div
+                            id="currentProfilePic"
+                            class="profile-image profile-image-fallback"
+                            onclick="document.getElementById('imageUpload').click()"
+                        >
+                            {{ user.first_name|first|default:user.username|first|upper }}
+                        </div>
+                        {% endif %}
+
+                        <button
+                            class="image-change-overlay"
+                            type="button"
+                            onclick="document.getElementById('imageUpload').click()"
+                            aria-label="Change profile picture"
+                        >
+                            <i class="fa-solid fa-camera"></i>
+                            <span>Change photo</span>
+                        </button>
+                    </div>
+
+                    <input type="file" id="imageUpload" accept="image/*" hidden>
+                    <div id="profilePicMessage" class="profile-message" aria-live="polite"></div>
+
+                    <div class="avatar-actions">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            onclick="document.getElementById('imageUpload').click()"
+                        >
+                            <i class="fa-regular fa-image"></i>
+                            Upload photo
+                        </button>
+
+                        {% if user.profile.profile_pic %}
+                        <button
+                            type="button"
+                            id="removeProfilePicBtn"
+                            class="btn btn-danger-outline"
+                            onclick="confirmRemoveProfilePic()"
+                        >
+                            <i class="fa-regular fa-trash-can"></i>
+                            Remove
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <p class="avatar-help">Square image recommended. Maximum file size: 2 MB.</p>
+                </div>
+            </section>
+
+            <nav class="card settings-nav" aria-label="Profile settings sections">
+                <a href="#basicInformation" class="active">
+                    <i class="fa-regular fa-user"></i>
+                    Basic information
+                </a>
+                <a href="#securitySettings">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Password
+                </a>
+            </nav>
+        </aside>
+
+        <main class="settings-content">
+            <section class="card settings-card" id="basicInformation">
+                <div class="settings-card-heading">
+                    <div>
+                        <h2>Basic information</h2>
+                        <p>Choose how your name and profile details appear across Nepixo.</p>
+                    </div>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" id="profileForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="cropped_image" id="croppedImage">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="firstName">First name</label>
+                            <input
+                                id="firstName"
+                                type="text"
+                                name="first_name"
+                                class="form-control"
+                                value="{{ user.first_name }}"
+                                autocomplete="given-name"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastName">Last name</label>
+                            <input
+                                id="lastName"
+                                type="text"
+                                name="last_name"
+                                class="form-control"
+                                value="{{ user.last_name }}"
+                                autocomplete="family-name"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <div class="input-prefix">
+                                <span>@</span>
+                                <input
+                                    id="username"
+                                    type="text"
+                                    name="username"
+                                    class="form-control"
+                                    value="{{ user.username }}"
+                                    autocomplete="username"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email address</label>
+                            <div class="readonly-field">
+                                <i class="fa-regular fa-envelope"></i>
+                                <span>{{ user.email|default:"No email address added" }}</span>
+                            </div>
+                            <small>Email cannot be changed from this page.</small>
+                        </div>
+
+                        <div class="form-group form-group-wide">
+                            <label for="bio">Bio</label>
+                            <textarea
+                                id="bio"
+                                name="bio"
+                                class="form-control"
+                                rows="5"
+                                maxlength="300"
+                                placeholder="Tell people a little about yourself..."
+                            >{{ user.profile.bio }}</textarea>
+                            <small>Keep it short and useful. Maximum 300 characters.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{% url 'profile' user.username %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-regular fa-floppy-disk"></i>
+                            Save changes
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card settings-card" id="securitySettings">
+                <div class="settings-card-heading security-heading">
+                    <div class="settings-icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div>
+                        <h2>Change password</h2>
+                        <p>Use a strong password you do not use for other accounts.</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="{% url 'change_password' %}" class="password-form">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="oldPassword">Current password</label>
+                        <input
+                            id="oldPassword"
+                            type="password"
+                            name="old_password"
+                            class="form-control"
+                            autocomplete="current-password"
+                            required
+                        >
+                    </div>
+
+                    <div class="password-grid">
+                        <div class="form-group">
+                            <label for="newPassword">New password</label>
+                            <input
+                                id="newPassword"
+                                type="password"
+                                name="new_password"
+                                class="form-control"
+                                autocomplete="new-password"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm password</label>
+                            <input
+                                id="confirmPassword"
+                                type="password"
+                                name="confirm_password"
+                                class="form-control"
+                                autocomplete="new-password"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-key"></i>
+                            Update password
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</div>
+
+<div id="removePicConfirmModal" class="settings-modal" aria-hidden="true">
+    <div class="settings-modal-dialog settings-modal-small" role="dialog" aria-modal="true" aria-labelledby="removePictureTitle">
+        <header class="settings-modal-header">
+            <div>
+                <h2 id="removePictureTitle">Remove profile picture?</h2>
+                <p>Your profile will show your initial instead.</p>
+            </div>
+            <button type="button" class="modal-close" onclick="closeRemoveConfirm()" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+        <div class="settings-modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeRemoveConfirm()">Cancel</button>
+            <button type="button" class="btn btn-danger" onclick="removeProfilePicture()">
+                Remove picture
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="settings-modal" id="cropModal" aria-hidden="true">
+    <div class="settings-modal-dialog crop-dialog" role="dialog" aria-modal="true" aria-labelledby="cropTitle">
+        <header class="settings-modal-header">
+            <div>
+                <h2 id="cropTitle">Adjust photo</h2>
+                <p>Move and resize the image before saving.</p>
+            </div>
+            <button type="button" class="modal-close" onclick="cancelCrop()" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+
+        <div class="crop-stage">
+            <img id="imageToCrop" src="" alt="Image crop preview">
+        </div>
+
+        <footer class="crop-toolbar">
+            <div class="crop-tools">
+                <button type="button" class="btn btn-secondary" onclick="rotateImage(-90)">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Rotate
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="resetCrop()">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    Reset
+                </button>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="applyCrop()">Use photo</button>
+        </footer>
+    </div>
+</div>
+
+<div
+    id="profileData"
+    data-initials="{{ user.first_name|first|default:user.username|first|upper }}"
+></div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/edit_profile.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }} · Nepixo{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div
+    class="profile-page"
+    id="profilePage"
+    data-username="{{ profile_user.username }}"
+    data-messages-url="{% url 'messages' %}"
+    data-is-owner="{% if user == profile_user %}true{% else %}false{% endif %}"
+>
+    <section class="card profile-hero">
+        <div class="profile-cover"></div>
+
+        <div class="profile-hero-body">
+            <div class="profile-avatar-wrap">
+                {% if profile_user.profile.profile_pic %}
+                <img
+                    src="{{ profile_user.profile.profile_pic.url }}"
+                    class="profile-avatar-large"
+                    alt="{{ profile_user.username }} profile picture"
+                >
+                {% else %}
+                <div class="profile-avatar-large profile-avatar-fallback">
+                    {{ profile_user.first_name|first|default:profile_user.username|first|upper }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="profile-identity">
+                <div class="profile-name-row">
+                    <div>
+                        <h1>
+                            {% if profile_user.get_full_name %}
+                                {{ profile_user.get_full_name }}
+                            {% else %}
+                                {{ profile_user.username }}
+                            {% endif %}
+                        </h1>
+                        <p class="profile-handle">@{{ profile_user.username }}</p>
+                    </div>
+
+                    <div class="profile-primary-actions">
+                        {% if user == profile_user %}
+                        <a href="{% url 'edit_profile' %}" class="btn btn-secondary">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                            Edit profile
+                        </a>
+                        {% else %}
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            id="followBtn"
+                            onclick="followUser('{{ profile_user.username }}')"
+                        >
+                            {% if is_following %}Unfollow{% else %}Follow{% endif %}
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            onclick="openProfileMessages('{{ profile_user.username }}')"
+                        >
+                            <i class="fa-regular fa-comment-dots"></i>
+                            Message
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <p class="profile-bio">
+                    {{ profile_user.profile.bio|default:"No bio added yet." }}
+                </p>
+
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <strong>{{ posts.count }}</strong>
+                        <span>Posts</span>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="profile-stat stat-button"
+                        onclick="showFollowers('{{ profile_user.username }}')"
+                    >
+                        <strong>{{ follower_count }}</strong>
+                        <span>Followers</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="profile-stat stat-button"
+                        onclick="showFollowing('{{ profile_user.username }}')"
+                    >
+                        <strong>{{ following_count }}</strong>
+                        <span>Following</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="profile-content-layout">
+        <aside class="profile-sidebar">
+            <section class="card profile-about-card">
+                <div class="profile-section-heading">
+                    <h2>About</h2>
+                </div>
+
+                <div class="about-list">
+                    <div class="about-item">
+                        <i class="fa-regular fa-user"></i>
+                        <div>
+                            <span>Username</span>
+                            <strong>@{{ profile_user.username }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="about-item">
+                        <i class="fa-regular fa-newspaper"></i>
+                        <div>
+                            <span>Posts</span>
+                            <strong>{{ posts.count }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="about-item">
+                        <i class="fa-solid fa-user-group"></i>
+                        <div>
+                            <span>Connections</span>
+                            <strong>{{ follower_count }} followers</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <main class="profile-feed">
+            <div class="profile-feed-heading">
+                <div>
+                    <h2>Posts</h2>
+                    <p>Updates shared by {{ profile_user.username }}</p>
+                </div>
+            </div>
+
+            <div class="profile-post-list" id="profilePosts">
+                {% for post in posts %}
+                <article class="card profile-post" id="post-{{ post.id }}">
+                    <header class="profile-post-header">
+                        <div class="post-author-avatar">
+                            {% if post.user.profile.profile_pic %}
+                            <img
+                                src="{{ post.user.profile.profile_pic.url }}"
+                                alt="{{ post.user.username }}"
+                            >
+                            {% else %}
+                            <span>{{ post.user.first_name|first|default:post.user.username|first|upper }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="profile-post-author">
+                            <strong>
+                                {% if post.user.get_full_name %}
+                                    {{ post.user.get_full_name }}
+                                {% else %}
+                                    {{ post.user.username }}
+                                {% endif %}
+                            </strong>
+
+                            <div>
+                                <span>@{{ post.user.username }}</span>
+                                <span>·</span>
+                                <time>{{ post.created_at|timesince }} ago</time>
+                                {% if post.is_edited %}
+                                <span class="edited-label">(edited)</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if user == profile_user %}
+                        <button
+                            type="button"
+                            class="post-menu-button"
+                            onclick="togglePostMenu({{ post.id }})"
+                            aria-label="Post options"
+                        >
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
+
+                        <div class="post-menu" id="postMenu-{{ post.id }}">
+                            <button type="button" onclick="editPost({{ post.id }})">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                                Edit post
+                            </button>
+                            <button type="button" class="danger" onclick="deletePost({{ post.id }})">
+                                <i class="fa-regular fa-trash-can"></i>
+                                Delete post
+                            </button>
+                        </div>
+                        {% endif %}
+                    </header>
+
+                    <div class="profile-post-content" id="postContent-{{ post.id }}">
+                        {{ post.content|linebreaks }}
+                    </div>
+
+                    <div class="edit-post-form" id="editForm-{{ post.id }}">
+                        <textarea
+                            class="edit-post-textarea"
+                            id="editTextarea-{{ post.id }}"
+                            maxlength="1000"
+                        >{{ post.content }}</textarea>
+
+                        <div class="edit-post-actions">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                onclick="cancelEdit({{ post.id }})"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-primary save-edit-btn"
+                                onclick="saveEdit({{ post.id }})"
+                            >
+                                Save changes
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="profile-post-actions">
+                        <button type="button" onclick="likePost({{ post.id }})">
+                            <i class="fa-regular fa-heart"></i>
+                            <span id="likeText-{{ post.id }}">Like</span>
+                            <b id="likeCount-{{ post.id }}">{{ post.like_count }}</b>
+                        </button>
+
+                        <button type="button" onclick="toggleComment({{ post.id }})">
+                            <i class="fa-regular fa-comment"></i>
+                            <span>Comment</span>
+                            <b id="commentCount-{{ post.id }}">{{ post.comment_count_value }}</b>
+                        </button>
+                    </div>
+
+                    <section class="profile-comment-section" id="comments-{{ post.id }}" hidden>
+                        <div class="profile-comment-form">
+                            <input
+                                type="text"
+                                id="commentInput-{{ post.id }}"
+                                class="comment-input"
+                                placeholder="Write a comment..."
+                                maxlength="500"
+                            >
+                            <button
+                                type="button"
+                                onclick="addComment({{ post.id }})"
+                                aria-label="Send comment"
+                            >
+                                <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+                        </div>
+
+                        <div class="profile-comment-list" id="commentList-{{ post.id }}"></div>
+                    </section>
+                </article>
+                {% empty %}
+                <section class="card profile-empty-state">
+                    <i class="fa-regular fa-newspaper"></i>
+                    <h2>No posts yet</h2>
+                    <p>
+                        {% if user == profile_user %}
+                            Your posts will appear here after you publish something.
+                        {% else %}
+                            {{ profile_user.username }} has not shared any posts yet.
+                        {% endif %}
+                    </p>
+                </section>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</div>
+
+<div id="followersModal" class="profile-modal" aria-hidden="true">
+    <div class="profile-modal-dialog">
+        <header class="profile-modal-header">
+            <div>
+                <h2>Followers</h2>
+                <p>People following @{{ profile_user.username }}</p>
+            </div>
+            <button type="button" onclick="closeModal('followersModal')" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+        <div class="profile-modal-body" id="followersList"></div>
+    </div>
+</div>
+
+<div id="followingModal" class="profile-modal" aria-hidden="true">
+    <div class="profile-modal-dialog">
+        <header class="profile-modal-header">
+            <div>
+                <h2>Following</h2>
+                <p>People followed by @{{ profile_user.username }}</p>
+            </div>
+            <button type="button" onclick="closeModal('followingModal')" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+        <div class="profile-modal-body" id="followingList"></div>
+    </div>
+</div>
+
+<div id="confirmationModal" class="profile-modal" aria-hidden="true">
+    <div class="profile-modal-dialog profile-confirmation-dialog">
+        <header class="profile-modal-header">
+            <div>
+                <h2>Delete post?</h2>
+                <p>This action cannot be undone.</p>
+            </div>
+        </header>
+        <div class="profile-modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="cancelDelete()">Cancel</button>
+            <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete post</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}

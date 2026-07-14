@@ -1,0 +1,76 @@
+<aside class="home-right">
+    <section class="card suggestions-card">
+        <div class="section-heading">
+            <div>
+                <h2>People to follow</h2>
+                <p>Suggested for you</p>
+            </div>
+
+            {% if active_page != 'people' %}
+            <a href="{% url 'friend_suggestions' %}">
+                See all
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="suggestions-list">
+            {% for suggestion in sidebar_suggestions %}
+            <div class="suggestion">
+
+                <a
+                    href="{% url 'profile' suggestion.username %}"
+                    class="avatar avatar-md"
+                >
+                    <span class="avatar-fallback">
+                        {% if suggestion.first_name %}
+                            {{ suggestion.first_name|first|upper }}
+                        {% else %}
+                            {{ suggestion.username|first|upper }}
+                        {% endif %}
+                    </span>
+
+                    {% if suggestion.profile.profile_pic %}
+                    <img
+                        src="{{ suggestion.profile.profile_pic.url }}"
+                        alt="{{ suggestion.username }}"
+                        onerror="this.remove()"
+                    >
+                    {% endif %}
+                </a>
+
+                <div class="suggestion-copy">
+                    <a href="{% url 'profile' suggestion.username %}">
+                        {% if suggestion.first_name or suggestion.last_name %}
+                            {{ suggestion.first_name }} {{ suggestion.last_name }}
+                        {% else %}
+                            {{ suggestion.username }}
+                        {% endif %}
+                    </a>
+
+                    <span>@{{ suggestion.username }}</span>
+                </div>
+
+                <button
+    class="btn-follow js-follow-button"
+    data-username="{{ suggestion.username }}"
+    type="button"
+>
+    Follow
+</button>
+            </div>
+
+            {% empty %}
+            <p class="muted-copy">
+                No new suggestions right now.
+            </p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <footer class="mini-footer">
+        <a href="#">About</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <span>© {% now "Y" %} Nepixo</span>
+    </footer>
+</aside>

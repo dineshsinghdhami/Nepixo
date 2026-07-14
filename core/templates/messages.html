@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Messages · Nepixo{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/messages.css' %}">
+{% endblock %}
+
+{% block content %}
+<div
+    class="messages-shell"
+    id="messagesPage"
+    data-open-user="{{ request.GET.user|default:'' }}"
+>
+    <aside class="card messages-sidebar">
+        <header class="messages-sidebar-header">
+            <div>
+                <span class="messages-kicker">Inbox</span>
+                <h1>Messages</h1>
+                <p>Private conversations with people you follow.</p>
+            </div>
+        </header>
+
+        <div class="conversation-search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input
+                type="search"
+                id="conversationSearch"
+                placeholder="Search conversations"
+                autocomplete="off"
+            >
+        </div>
+
+        <div class="conversation-list" id="conversationList">
+            {% for conversation in conversations %}
+            <button
+                class="conversation-row"
+                type="button"
+                data-username="{{ conversation.user.username }}"
+                data-user-id="{{ conversation.user.id }}"
+                data-search-text="{% if conversation.user.first_name or conversation.user.last_name %}{{ conversation.user.first_name }} {{ conversation.user.last_name }}{% else %}{{ conversation.user.username }}{% endif %} {{ conversation.user.username }}"
+            >
+                <span class="conversation-avatar">
+    <span class="conversation-avatar-letter">
+        {% if conversation.user.first_name %}
+            {{ conversation.user.first_name|first|upper }}
+        {% else %}
+            {{ conversation.user.username|first|upper }}
+        {% endif %}
+    </span>
+
+    {% if conversation.user.profile.profile_pic %}
+        <img
+            src="{{ conversation.user.profile.profile_pic.url }}"
+            alt="{{ conversation.user.username }}"
+            onerror="this.style.display='none';"
+        >
+    {% endif %}
+</span>
+
+                <span class="conversation-copy">
+                    <span class="conversation-name-row">
+                        <strong>
+                            {% if conversation.user.first_name or conversation.user.last_name %}
+                                {{ conversation.user.first_name }} {{ conversation.user.last_name }}
+                            {% else %}
+                                {{ conversation.user.username }}
+                            {% endif %}
+                        </strong>
+
+                        {% if conversation.last_time %}
+                        <time>{{ conversation.last_time|timesince }}</time>
+                        {% endif %}
+                    </span>
+
+                    <span class="conversation-preview-row">
+                        <small>{{ conversation.last_message|default:"No messages yet"|truncatechars:48 }}</small>
+
+                        {% if conversation.unread_count %}
+                        <b>{{ conversation.unread_count }}</b>
+                        {% endif %}
+                    </span>
+                </span>
+            </button>
+            {% empty %}
+            <div class="conversation-empty">
+                <span class="empty-icon">
+                    <i class="fa-regular fa-comment-dots"></i>
+                </span>
+                <strong>No conversations yet</strong>
+                <p>Open someone’s profile and choose Message to begin.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <section class="card chat-panel" id="chatPanel">
+        <div class="chat-placeholder" id="chatPlaceholder">
+            <span class="chat-placeholder-icon">
+                <i class="fa-regular fa-comment-dots"></i>
+            </span>
+            <h2>Select a conversation</h2>
+            <p>Choose someone from the left to view and send messages.</p>
+        </div>
+
+        <div class="active-chat" id="activeChat" hidden>
+            <header class="chat-heading">
+                <button
+                    class="chat-back"
+                    id="chatBack"
+                    type="button"
+                    aria-label="Back to conversations"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+
+                <a class="chat-person" id="chatProfileLink" href="#">
+                    <span class="chat-person-avatar" id="chatAvatar"></span>
+
+                    <span class="chat-person-copy">
+                        <strong id="chatName"></strong>
+                        <small id="chatUsername"></small>
+                    </span>
+                </a>
+
+                <a class="chat-view-profile" id="chatViewProfile" href="#">
+                    View profile
+                </a>
+            </header>
+
+            <div class="chat-message-list" id="chatMessageList" aria-live="polite"></div>
+
+            <form class="chat-compose" id="chatForm">
+                <div class="chat-input-wrap">
+                    <input
+                        id="chatInput"
+                        type="text"
+                        maxlength="2000"
+                        placeholder="Write a message..."
+                        autocomplete="off"
+                    >
+                </div>
+
+                <button
+                    class="chat-send-button"
+                    type="submit"
+                    aria-label="Send message"
+                >
+                    <i class="fa-solid fa-arrow-up"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/messages.js' %}"></script>
+{% endblock %}

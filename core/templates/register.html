@@ -1,0 +1,534 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Nepixo{% endblock %}
+
+{% block content %}
+<div style="
+    width: 100%;
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 12px;
+">
+    <div class="card" style="
+        width: 100%;
+        max-width: 380px;
+        padding: 24px;
+        border-radius: 16px;
+        margin: 0 auto;
+    ">
+        <div style="
+            width: 46px;
+            height: 46px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            color: var(--brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">
+            <i
+                class="fas fa-user-plus"
+                aria-hidden="true"
+                style="font-size: 19px;"
+            ></i>
+        </div>
+
+        <div style="
+            text-align: center;
+            margin-bottom: 18px;
+        ">
+            <h1 style="
+                font-size: 22px;
+                line-height: 1.25;
+                letter-spacing: -.02em;
+                margin-bottom: 6px;
+            ">
+                Create account
+            </h1>
+
+            <p style="
+                color: var(--muted);
+                font-size: 13px;
+                line-height: 1.6;
+                max-width: 300px;
+                margin: 0 auto;
+            ">
+                Join Nepixo and create your profile.
+            </p>
+        </div>
+
+        <form method="POST" id="registerForm" style="width: 100%;">
+            {% csrf_token %}
+
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+                gap: 12px;
+                margin-bottom: 12px;
+            ">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label
+                        for="firstName"
+                        style="
+                            display: block;
+                            margin-bottom: 6px;
+                            font-size: 13px;
+                            font-weight: 600;
+                        "
+                    >
+                        First name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="firstName"
+                        name="first_name"
+                        class="form-control"
+                        placeholder="First name"
+                        autocomplete="given-name"
+                        autofocus
+                        required
+                        style="
+                            width: 100%;
+                            min-width: 0;
+                            height: 42px;
+                            font-size: 16px;
+                        "
+                    >
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label
+                        for="lastName"
+                        style="
+                            display: block;
+                            margin-bottom: 6px;
+                            font-size: 13px;
+                            font-weight: 600;
+                        "
+                    >
+                        Last name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="lastName"
+                        name="last_name"
+                        class="form-control"
+                        placeholder="Last name"
+                        autocomplete="family-name"
+                        required
+                        style="
+                            width: 100%;
+                            min-width: 0;
+                            height: 42px;
+                            font-size: 16px;
+                        "
+                    >
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label
+                    for="username"
+                    style="
+                        display: block;
+                        margin-bottom: 6px;
+                        font-size: 13px;
+                        font-weight: 600;
+                    "
+                >
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    class="form-control"
+                    placeholder="Choose a username"
+                    autocomplete="username"
+                    required
+                    style="
+                        width: 100%;
+                        min-width: 0;
+                        height: 42px;
+                        font-size: 16px;
+                    "
+                >
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label
+                    for="email"
+                    style="
+                        display: block;
+                        margin-bottom: 6px;
+                        font-size: 13px;
+                        font-weight: 600;
+                    "
+                >
+                    Email address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Enter your email address"
+                    autocomplete="email"
+                    inputmode="email"
+                    required
+                    style="
+                        width: 100%;
+                        min-width: 0;
+                        height: 42px;
+                        font-size: 16px;
+                    "
+                >
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label
+                    for="passwordInput"
+                    style="
+                        display: block;
+                        margin-bottom: 6px;
+                        font-size: 13px;
+                        font-weight: 600;
+                    "
+                >
+                    Password
+                </label>
+
+                <div style="
+                    position: relative;
+                    width: 100%;
+                ">
+                    <input
+                        type="password"
+                        name="password"
+                        id="passwordInput"
+                        class="form-control"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                        required
+                        minlength="6"
+                        style="
+                            width: 100%;
+                            min-width: 0;
+                            height: 42px;
+                            padding-right: 46px;
+                            font-size: 16px;
+                        "
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-target="passwordInput"
+                        aria-label="Show password"
+                        aria-pressed="false"
+                        style="
+                            position: absolute;
+                            top: 50%;
+                            right: 8px;
+                            width: 32px;
+                            height: 32px;
+                            padding: 0;
+                            transform: translateY(-50%);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: transparent;
+                            color: var(--muted);
+                            border-radius: 8px;
+                            cursor: pointer;
+                        "
+                    >
+                        <svg
+                            class="eye-open"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="19"
+                            height="19"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+
+                        <svg
+                            class="eye-closed"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="19"
+                            height="19"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                            style="display: none;"
+                        >
+                            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-6.94"/>
+                            <path d="M1 1l22 22"/>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a21.82 21.82 0 0 1-4.88 6.68"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label
+                    for="confirmPasswordInput"
+                    style="
+                        display: block;
+                        margin-bottom: 6px;
+                        font-size: 13px;
+                        font-weight: 600;
+                    "
+                >
+                    Confirm password
+                </label>
+
+                <div style="
+                    position: relative;
+                    width: 100%;
+                ">
+                    <input
+                        type="password"
+                        name="confirm_password"
+                        id="confirmPasswordInput"
+                        class="form-control"
+                        placeholder="Confirm your password"
+                        autocomplete="new-password"
+                        required
+                        minlength="6"
+                        style="
+                            width: 100%;
+                            min-width: 0;
+                            height: 42px;
+                            padding-right: 46px;
+                            font-size: 16px;
+                        "
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-target="confirmPasswordInput"
+                        aria-label="Show password"
+                        aria-pressed="false"
+                        style="
+                            position: absolute;
+                            top: 50%;
+                            right: 8px;
+                            width: 32px;
+                            height: 32px;
+                            padding: 0;
+                            transform: translateY(-50%);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: transparent;
+                            color: var(--muted);
+                            border-radius: 8px;
+                            cursor: pointer;
+                        "
+                    >
+                        <svg
+                            class="eye-open"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="19"
+                            height="19"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+
+                        <svg
+                            class="eye-closed"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="19"
+                            height="19"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                            style="display: none;"
+                        >
+                            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-6.94"/>
+                            <path d="M1 1l22 22"/>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a21.82 21.82 0 0 1-4.88 6.68"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                style="
+                    width: 100%;
+                    min-width: 0;
+                    height: 42px;
+                    padding: 0 14px;
+                    font-size: 14px;
+                "
+            >
+                <span>Create account</span>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </button>
+
+            <p style="
+                color: var(--muted);
+                font-size: 11px;
+                line-height: 1.6;
+                text-align: center;
+                margin-top: 14px;
+            ">
+                By registering, you agree to our
+                <a href="#" style="color: var(--brand); font-weight: 600;">
+                    Terms &amp; Conditions
+                </a>
+                and
+                <a href="#" style="color: var(--brand); font-weight: 600;">
+                    Privacy Policy
+                </a>.
+            </p>
+        </form>
+
+        <div style="
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 18px 0 14px;
+        ">
+            <span style="
+                height: 1px;
+                background: var(--line);
+                flex: 1;
+            "></span>
+
+            <span style="
+                color: var(--muted);
+                font-size: 10px;
+                flex-shrink: 0;
+            ">
+                ALREADY REGISTERED?
+            </span>
+
+            <span style="
+                height: 1px;
+                background: var(--line);
+                flex: 1;
+            "></span>
+        </div>
+
+        <p style="
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        ">
+            Already have an account?
+
+            <a
+                href="{% url 'login' %}"
+                style="
+                    color: var(--brand);
+                    font-weight: 600;
+                "
+            >
+                Log in
+            </a>
+        </p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggles = document.querySelectorAll('.password-toggle');
+
+    toggles.forEach(function (toggle) {
+        toggle.addEventListener('click', function () {
+            const targetId = toggle.dataset.target;
+            const input = document.getElementById(targetId);
+            const eyeOpen = toggle.querySelector('.eye-open');
+            const eyeClosed = toggle.querySelector('.eye-closed');
+
+            if (!input || !eyeOpen || !eyeClosed) {
+                return;
+            }
+
+            const passwordIsHidden = input.type === 'password';
+
+            input.type = passwordIsHidden ? 'text' : 'password';
+            eyeOpen.style.display = passwordIsHidden ? 'none' : 'block';
+            eyeClosed.style.display = passwordIsHidden ? 'block' : 'none';
+
+            toggle.setAttribute(
+                'aria-label',
+                passwordIsHidden ? 'Hide password' : 'Show password'
+            );
+
+            toggle.setAttribute(
+                'aria-pressed',
+                passwordIsHidden ? 'true' : 'false'
+            );
+        });
+    });
+
+    const registerForm = document.getElementById('registerForm');
+    const passwordInput = document.getElementById('passwordInput');
+    const confirmPasswordInput = document.getElementById(
+        'confirmPasswordInput'
+    );
+
+    if (registerForm && passwordInput && confirmPasswordInput) {
+        registerForm.addEventListener('submit', function (event) {
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                event.preventDefault();
+
+                confirmPasswordInput.setCustomValidity(
+                    'Passwords do not match.'
+                );
+
+                confirmPasswordInput.reportValidity();
+                confirmPasswordInput.focus();
+            }
+        });
+
+        confirmPasswordInput.addEventListener('input', function () {
+            confirmPasswordInput.setCustomValidity('');
+        });
+
+        passwordInput.addEventListener('input', function () {
+            confirmPasswordInput.setCustomValidity('');
+        });
+    }
+});
+</script>
+{% endblock %}

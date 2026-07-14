@@ -1,0 +1,810 @@
+{% extends 'base.html' %}
+{% block title %}Home · Nepixo{% endblock %}
+{% block content %}
+{% if user.is_authenticated %}
+<div class="home-layout">
+    {% include "partials/dashboard_left_sidebar.html" %}
+
+    <section class="feed-column">
+        <div class="feed-heading"><div><h1>Home</h1><p>Posts from you and people you follow</p></div></div>
+        <section class="card composer">
+            <div class="composer-row">
+                <a href="{% url 'profile' user.username %}" class="avatar avatar-md">
+                    {% if user.profile.profile_pic %}<img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}">{% else %}<span>{{ user.username|first|upper }}</span>{% endif %}
+                </a>
+                <textarea id="postContent" class="composer-input" rows="2" maxlength="1000" placeholder="Share something with your network..."></textarea>
+            </div>
+            <div class="composer-footer">
+    <span>Keep it useful and respectful.</span>
+
+    <span id="postError"
+          style="display:none; color:#ff4d4f; font-size:13px; margin-left:15px;"></span>
+
+    <button onclick="createPost()" class="btn btn-primary">Publish</button>
+</div>
+</section>
+
+        <div id="postsContainer" class="feed-list">
+            {% for post in posts %}
+            <article class="card post" id="post-{{ post.id }}">
+                <header class="post-header">
+                    <a
+    href="{% url 'profile' post.user.username %}"
+    class="avatar avatar-md"
+>
+    <span class="avatar-fallback">
+        {% if post.user.first_name %}
+            {{ post.user.first_name|first|upper }}
+        {% else %}
+            {{ post.user.username|first|upper }}
+        {% endif %}
+    </span>
+
+    {% if post.user.profile.profile_pic %}
+    <img
+        src="{{ post.user.profile.profile_pic.url }}"
+        alt="{{ post.user.username }}"
+        onerror="this.remove()"
+    >
+    {% endif %}
+</a>
+                    <div class="post-author">
+                        <a href="{% url 'profile' post.user.username %}">{% if post.user.first_name or post.user.last_name %}{{ post.user.first_name }} {{ post.user.last_name }}{% else %}{{ post.user.username }}{% endif %}</a>
+                        <div><span>@{{ post.user.username }}</span><span class="dot">·</span><time>{{ post.created_at|timesince }} ago</time></div>
+                    </div>
+                </header>
+                <div class="post-content">{{ post.content|linebreaks }}</div>
+                <div class="post-actions">
+                    <button class="post-action" onclick="likePost({{ post.id }})" type="button"><i id="likeIcon-{{ post.id }}" class="{% if post.is_liked_by_user %}fas fa-heart liked{% else %}far fa-heart{% endif %}"></i><span id="likeText-{{ post.id }}">{% if post.is_liked_by_user %}Liked{% else %}Like{% endif %}</span><b id="likeCount-{{ post.id }}">{% if post.like_count > 0 %}{{ post.like_count }}{% endif %}</b></button>
+                    <button class="post-action" onclick="toggleComment({{ post.id }})" type="button"><i class="far fa-comment"></i><span>Comment</span><b id="commentCount-{{ post.id }}">{% if post.comment_count > 0 %}{{ post.comment_count }}{% endif %}</b></button>
+                    <button class="post-action" onclick="sharePost({{ post.id }})" type="button"><i class="fa-solid fa-arrow-up-from-bracket"></i><span>Share</span><b id="shareCount-{{ post.id }}">{% if post.share_count > 0 %}{{ post.share_count }}{% endif %}</b></button>
+                </div>
+                <div id="comments-{{ post.id }}" class="comment-section" style="display:none">
+                    <div class="comment-form">
+                        <div class="avatar avatar-sm">{% if user.profile.profile_pic %}<img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}">{% else %}<span>{{ user.username|first|upper }}</span>{% endif %}</div>
+                        <div class="comment-input-wrap"><input type="text" id="commentInput-{{ post.id }}" class="comment-input" placeholder="Write a comment" onkeypress="if(event.key === 'Enter') addComment({{ post.id }})"><button id="commentBtn-{{ post.id }}" onclick="addComment({{ post.id }})" type="button" aria-label="Send comment"><i class="fa-solid fa-arrow-up"></i></button></div>
+                    </div>
+                    <div id="commentList-{{ post.id }}" class="comment-list"></div>
+                </div>
+            </article>
+            {% empty %}
+            <section class="card empty-state"><i class="fa-regular fa-newspaper"></i><h2>Your feed is quiet</h2><p>Follow people from Discover or publish your first post.</p><a href="{% url 'friend_suggestions' %}" class="btn btn-secondary">Find people</a></section>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% include "partials/dashboard_right_sidebar.html" %}
+</div>
+
+<div id="messageBox" class="message-box">
+    <div class="message-header"><span id="messageHeader">Messages</span><button onclick="document.getElementById('messageBox').style.display='none'" type="button">×</button></div>
+    <div class="message-body" id="messageBody"></div>
+    <div class="message-input"><input type="text" id="messageInput" placeholder="Type a message..."><input type="hidden" id="messageReceiver"></div>
+</div>
+<script>
+    // Create Post
+    function createPost() {
+    const content = document.getElementById('postContent').value.trim();
+    
+    if (content) {
+        // Use the correct URL pattern from Django
+        fetch('{% url "create_post" %}', {  // Fixed: Using Django URL tag
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: 'content=' + encodeURIComponent(content)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Clear the textarea
+                document.getElementById('postContent').value = '';
+                document.getElementById('postError').textContent = '';
+                
+                // Option 1: Reload the page to show new post
+                // location.reload();
+                
+                // Option 2: Dynamically add the new post without reloading (better UX)
+                addNewPostDynamically(content);
+            } else {
+                alert('Failed to create post. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error creating post. Please try again.');
+        });
+    } else {
+    const error = document.getElementById('postError');
+
+error.textContent = 'Please write something before posting!';
+error.style.display = 'inline';
+
+setTimeout(() => {
+    error.style.display = 'none';
+    error.textContent = '';
+}, 2500);
+}
+}
+// Function to add new post dynamically without reloading
+// Function to add new post dynamically without reloading
+function addNewPostDynamically(content) {
+    const postsContainer = document.getElementById('postsContainer');
+    const currentUser = '{{ user.username }}';
+    const currentUserPic = '{% if user.profile.profile_pic %}{{ user.profile.profile_pic.url }}{% else %}https://via.placeholder.com/40{% endif %}';
+    
+    // Get current timestamp
+    const now = new Date();
+    const timeString = 'Just now';
+    
+    const postHTML = `
+        <div class="card post" style="animation: fadeIn 0.5s;">
+            <div class="post-header">
+                <a href="{% url 'profile' user.username %}" style="text-decoration: none;">
+                    <img src="${currentUserPic}" 
+                         class="profile-pic" alt="${currentUser}"
+                         style="cursor: pointer;">
+                </a>
+                <div>
+                    <strong><a href="{% url 'profile' user.username %}" style="text-decoration: none; color: inherit;">${currentUser}</a></strong>
+                    <div style="font-size: 12px; color: #65676b;">
+                        ${timeString}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-content">
+                ${content.replace(/\n/g, '<br>')}
+            </div>
+            
+            <div class="post-actions">
+                <span class="post-action" onclick="likePost('new')">
+                    <i id="likeIcon-new" class="like-icon far fa-heart"></i>
+                    <span id="likeText-new">Like</span>
+                    <span class="post-action-count" id="likeCount-new" style="display: none;">0</span>
+                </span>
+                
+                <span class="post-action" onclick="toggleComment('new')">
+                    <i class="far fa-comment comment-icon"></i>
+                    <span>Comment</span>
+                    <span class="post-action-count" id="commentCount-new" style="display: none;">0</span>
+                </span>
+                
+                <span class="post-action" onclick="sharePost('new')">
+                    <i class="far fa-share-square share-icon"></i>
+                    <span>Share</span>
+                    <span class="post-action-count" id="shareCount-new" style="display: none;">0</span>
+                </span>
+            </div>
+            
+            <!-- Comments Section -->
+            <div id="comments-new" style="display: none; margin-top: 15px;">
+                <div class="form-group">
+                    <input type="text" id="commentInput-new" class="form-control" placeholder="Write a comment..." 
+                           onkeypress="if(event.key === 'Enter') addComment('new')">
+                </div>
+                <div id="commentList-new">
+                    <!-- Comments will be loaded here -->
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Insert at the top of posts container
+    postsContainer.insertAdjacentHTML('afterbegin', postHTML);
+    
+    // Add fade-in animation
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+
+// Share Post Function
+function sharePost(postId) {
+    // Get the post element
+    const postElement = document.getElementById('post-' + postId);
+    
+    // Create share options modal
+    const shareModal = document.createElement('div');
+    shareModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    `;
+    
+    // Get post content
+    const postContent = postElement.querySelector('.post-content').innerText;
+    const postUser = postElement.querySelector('.post-header strong a').innerText;
+    const shareUrl = window.location.origin + '/post/' + postId + '/';
+    
+    shareModal.innerHTML = `
+    <div style="background: white; border-radius: 12px; padding: 20px; width: 90%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="margin: 0; color: #1877f2; font-size: 18px;">Share this post</h3>
+            <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                    style="background: none; border: none; font-size: 24px; cursor: pointer; color: #65676b; line-height: 1;">
+                ×
+            </button>
+        </div>
+        
+        <!-- Share Options -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px;">
+            <button onclick="copyToClipboard('${shareUrl}')" 
+                    class="share-option-btn" title="Copy Link">
+                <i class="fas fa-link" style="font-size: 20px;"></i>
+                <span style="font-size: 11px;">Copy Link</span>
+            </button>
+            
+            <button onclick="shareToWhatsApp('${shareUrl}', '${postContent.substring(0, 100)}...')" 
+                    class="share-option-btn" title="WhatsApp">
+                <i class="fab fa-whatsapp" style="color: #25D366; font-size: 20px;"></i>
+                <span style="font-size: 11px;">WhatsApp</span>
+            </button>
+            
+            <button onclick="shareViaEmail('${shareUrl}', '${postContent}', '${postUser}')" 
+                    class="share-option-btn" title="Email">
+                <i class="fas fa-envelope" style="color: #EA4335; font-size: 20px;"></i>
+                <span style="font-size: 11px;">Email</span>
+            </button>
+            
+        </div>
+        
+        <!-- Quick Share Preview -->
+        <div style="background: #f0f2f5; padding: 10px; border-radius: 8px; margin-top: 12px; font-size: 13px;">
+            <div style="color: #65676b; margin-bottom: 6px; font-size: 12px;">Preview:</div>
+            <div style="font-weight: 500; margin-bottom: 4px; color: #050505;">${postUser}</div>
+            <div style="color: #65676b; word-break: break-all; font-size: 11px; margin-top: 4px;">${shareUrl}</div>
+        </div>
+    </div>
+`;
+    
+    document.body.appendChild(shareModal);
+    
+    // Add CSS for share buttons
+    const shareStyle = document.createElement('style');
+    shareStyle.innerHTML = `
+        .share-option-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            gap: 8px;
+        }
+        
+        .share-option-btn:hover {
+            background: #f0f2f5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .share-option-btn i {
+            font-size: 24px;
+        }
+        
+        .share-option-btn span {
+            font-size: 12px;
+            color: #65676b;
+        }
+    `;
+    document.head.appendChild(shareStyle);
+}
+
+// Share Helper Functions
+
+
+
+function shareToWhatsApp(url, text) {
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+function shareToFacebook(url) {
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    window.open(facebookUrl, '_blank', 'width=600,height=400');
+}
+
+function shareToTwitter(url, text) {
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(twitterUrl, '_blank', 'width=600,height=400');
+}
+
+function shareViaEmail(url, content, user) {
+    const subject = `Check out this post by ${user} on SocialApp`;
+    const body = `${user} posted on SocialApp:\n\n${content}\n\nView it here: ${url}`;
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+}
+
+function shareAsNewPost(postId) {
+    // Get post content
+    const postElement = document.getElementById('post-' + postId);
+    const postContent = postElement.querySelector('.post-content').innerText;
+    const postUser = postElement.querySelector('.post-header strong a').innerText;
+    
+    // Set the quote in the post creation textarea
+    const quote = `"${postContent}"\n\n- Shared from ${postUser}`;
+    document.getElementById('postContent').value = quote;
+    document.getElementById('postContent').focus();
+    
+    // Close share modal
+    document.querySelector('[style*="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5)"]')?.remove();
+    
+    // Increment share count (you would need backend support for this)
+    updateShareCount(postId);
+}
+
+function updateShareCount(postId) {
+    // This would typically call your backend API to increment share count
+    // For now, we'll just update the UI
+    const shareCount = document.getElementById('shareCount-' + postId);
+    if (shareCount) {
+        const currentCount = parseInt(shareCount.textContent) || 0;
+        shareCount.textContent = currentCount + 1;
+        shareCount.style.display = 'inline';
+        
+        // Add animation
+        shareCount.style.transform = 'scale(1.3)';
+        setTimeout(() => {
+            shareCount.style.transform = 'scale(1)';
+        }, 200);
+    }
+}
+    
+    // Like Post
+   function likePost(postId) {
+    const likeIcon = document.getElementById('likeIcon-' + postId);
+    const likeText = document.getElementById('likeText-' + postId);
+    const likeCount = document.getElementById('likeCount-' + postId);
+    
+    // Add loading state
+    likeIcon.style.opacity = '0.7';
+    
+    fetch('/like/' + postId + '/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.liked) {
+                // Change to filled heart
+                likeIcon.className = 'like-icon fas fa-heart liked';
+                likeText.textContent = 'Liked';
+                
+                // Add animation
+                likeIcon.style.animation = 'heartBeat 0.5s';
+                setTimeout(() => {
+                    likeIcon.style.animation = '';
+                }, 500);
+            } else {
+                // Change to outline heart
+                likeIcon.className = 'like-icon far fa-heart';
+                likeText.textContent = 'Like';
+            }
+            
+            // Update count
+            if (likeCount) {
+                if (data.count > 0) {
+                    likeCount.textContent = data.count;
+                    likeCount.style.display = 'inline';
+                    
+                    // Add count animation
+                    likeCount.style.transform = 'scale(1.3)';
+                    setTimeout(() => {
+                        likeCount.style.transform = 'scale(1)';
+                    }, 200);
+                } else {
+                    likeCount.style.display = 'none';
+                }
+            }
+            
+            likeIcon.style.opacity = '1';
+        })
+        .catch(error => {
+            console.error('Error liking post:', error);
+            likeIcon.style.opacity = '1';
+        });
+}
+    
+    function toggleComment(postId) {
+        const commentSection = document.getElementById('comments-' + postId);
+        if (commentSection.style.display === 'none') {
+            commentSection.style.display = 'block';
+            loadComments(postId);
+        } else {
+            commentSection.style.display = 'none';
+        }
+    }
+    
+    // Add Comment
+    function addComment(postId) {
+        const input = document.getElementById('commentInput-' + postId);
+        const content = input.value.trim();
+        
+        if (content) {
+            fetch('/comment/' + postId + '/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: 'content=' + encodeURIComponent(content)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    input.value = '';
+                    // Add new comment to the list
+                    addCommentToUI(postId, data.comment);
+                    // Update comment count if displayed
+                    updateCommentCount(postId);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding comment. Please try again.');
+            });
+        }
+    }
+    // Initialize comment functionality for mobile
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up all comment inputs
+    const commentInputs = document.querySelectorAll('[id^="commentInput-"]');
+    commentInputs.forEach(input => {
+        const postId = input.id.split('-')[1];
+        const commentBtn = document.getElementById('commentBtn-' + postId);
+        
+        if (commentBtn) {
+            // Update button state based on input
+            input.addEventListener('input', function() {
+                const hasContent = this.value.trim().length > 0;
+                commentBtn.disabled = !hasContent;
+                commentBtn.style.opacity = hasContent ? '1' : '0.5';
+                commentBtn.style.cursor = hasContent ? 'pointer' : 'not-allowed';
+            });
+            
+            // Initialize button state
+            commentBtn.disabled = input.value.trim().length === 0;
+            commentBtn.style.opacity = commentBtn.disabled ? '0.5' : '1';
+            commentBtn.style.cursor = commentBtn.disabled ? 'not-allowed' : 'pointer';
+            
+            // Add touch feedback for mobile
+            commentBtn.addEventListener('touchstart', function() {
+                if (!this.disabled) {
+                    this.style.transform = 'translateY(-50%) scale(0.95)';
+                }
+            });
+            
+            commentBtn.addEventListener('touchend', function() {
+                this.style.transform = 'translateY(-50%)';
+            });
+        }
+        
+        // Better mobile keyboard handling
+        input.addEventListener('keydown', function(e) {
+            // Handle mobile keyboard's "go" or "send" button
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                addComment(postId);
+            }
+        });
+    });
+    
+    // Check if device is mobile
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
+    // Show mobile hints on mobile devices
+    if (isMobileDevice()) {
+        const mobileHints = document.querySelectorAll('[id^="mobileHint-"]');
+        mobileHints.forEach(hint => {
+            hint.style.display = 'block';
+        });
+    }
+});
+
+// Enhanced addComment function with mobile feedback
+function addComment(postId) {
+    const input = document.getElementById('commentInput-' + postId);
+    const button = document.getElementById('commentBtn-' + postId);
+    const content = input.value.trim();
+    
+    if (content && !button.disabled) {
+        // Add loading state
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<span style="font-size: 12px;">...</span>';
+        button.disabled = true;
+        button.style.cursor = 'wait';
+        
+        fetch('/comment/' + postId + '/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: 'content=' + encodeURIComponent(content)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Clear input
+                input.value = '';
+                
+                // Reset button
+                button.innerHTML = originalHTML;
+                button.disabled = false;
+                button.style.cursor = 'pointer';
+                button.style.opacity = '0.5';
+                
+                // Add new comment to the list
+                addCommentToUI(postId, data.comment);
+                
+                // Update comment count
+                updateCommentCount(postId);
+                
+                // Show success feedback (subtle)
+                input.placeholder = 'Comment added!';
+                setTimeout(() => {
+                    input.placeholder = 'Write another comment...';
+                }, 1500);
+            } else {
+                alert('Failed to add comment. Please try again.');
+                button.innerHTML = originalHTML;
+                button.disabled = false;
+                button.style.cursor = 'pointer';
+                button.style.opacity = '1';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error adding comment. Please check your connection.');
+            button.innerHTML = originalHTML;
+            button.disabled = false;
+            button.style.cursor = 'pointer';
+            button.style.opacity = '1';
+        });
+    } else if (!content) {
+        // Shake animation for empty comment
+        input.style.animation = 'shake 0.5s';
+        input.focus();
+        setTimeout(() => {
+            input.style.animation = '';
+        }, 500);
+    }
+}
+
+// Add shake animation to CSS
+const style = document.createElement('style');
+style.innerHTML = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+`;
+document.head.appendChild(style);
+    // Load Comments
+    function loadComments(postId) {
+        const commentList = document.getElementById('commentList-' + postId);
+        commentList.innerHTML = '<p>Loading comments...</p>';
+        
+        fetch('/get-comments/' + postId + '/')
+            .then(response => response.json())
+            .then(data => {
+                commentList.innerHTML = '';
+                
+                if (data.comments.length === 0) {
+                    commentList.innerHTML = '<p style="color: #666; text-align: center;">No comments yet. Be the first to comment!</p>';
+                    return;
+                }
+                
+                data.comments.forEach(comment => {
+                    addCommentToUI(postId, comment, false);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                commentList.innerHTML = '<p style="color: red;">Error loading comments</p>';
+            });
+    }
+    
+    // Add Comment to UI// Add Comment to UI
+    function addCommentToUI(postId, comment, scrollToBottom = true) {
+    const commentList = document.getElementById('commentList-' + postId);
+    
+    const commentDiv = document.createElement('div');
+    commentDiv.className = 'comment-item';
+    commentDiv.style.cssText = `
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    `;
+    
+    // Get initials from username
+    const commentInitials = comment.user ? comment.user.charAt(0).toUpperCase() : '?';
+    const profilePic = comment.profile_pic;
+    
+    let profilePicHtml;
+    if (profilePic) {
+        profilePicHtml = `<a href="/profile/${comment.user}/" style="text-decoration: none;">
+            <img src="${profilePic}" 
+                 style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;"
+                 alt="${comment.user}"
+                 onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1877f2,#42b72a);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;color:white;text-transform:uppercase;\\'>${commentInitials}</div>'">
+        </a>`;
+    } else {
+        profilePicHtml = `<a href="/profile/${comment.user}/" style="text-decoration: none;">
+            <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1877f2,#42b72a);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;color:white;text-transform:uppercase;">
+                ${commentInitials}
+            </div>
+        </a>`;
+    }
+    
+    commentDiv.innerHTML = `
+        ${profilePicHtml}
+        <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between;">
+                <a href="/profile/${comment.user}/" style="text-decoration: none; color: #1877f2; font-weight: bold; font-size: 14px;">
+                    ${comment.user}
+                </a>
+                <small style="color: #666; font-size: 12px;">${comment.created_at}</small>
+            </div>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">${comment.content}</p>
+        </div>
+    `;
+    
+    commentList.appendChild(commentDiv);
+    
+    if (scrollToBottom) {
+        commentList.scrollTop = commentList.scrollHeight;
+    }
+}
+    // Update comment count (if you want to show comment count)
+  // Also update the comment count updating function
+function updateCommentCount(postId) {
+    const commentCount = document.getElementById('commentCount-' + postId);
+    if (commentCount) {
+        fetch('/get-comments/' + postId + '/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.comments.length > 0) {
+                    commentCount.textContent = data.comments.length;
+                    commentCount.style.display = 'inline';
+                } else {
+                    commentCount.style.display = 'none';
+                }
+            });
+    }
+}
+    
+    // Follow User
+    function followUser(username) {
+        fetch('/follow/' + username + '/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.followed) {
+                    // alert('You are now following ' + username);
+                } else {
+                    // alert('Unfollowed ' + username);
+                }
+                location.reload();
+            });
+    }
+    
+    // Enable Enter key for post creation
+    document.addEventListener('DOMContentLoaded', function() {
+        const postInput = document.getElementById('postContent');
+        if (postInput) {
+            postInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    createPost();
+                }
+            });
+        }
+    });
+
+
+    // Copy to Clipboard Function
+function copyToClipboard(text) {
+    // Modern approach using navigator.clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            showCopySuccess();
+        }).catch(function(err) {
+            console.error('Could not copy text: ', err);
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        // Fallback for older browsers
+        fallbackCopyToClipboard(text);
+    }
+}
+
+// Fallback copy method
+function fallbackCopyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.top = '0';
+    textarea.style.left = '0';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showCopySuccess();
+        } else {
+            showCopyError();
+        }
+    } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+        showCopyError();
+    }
+    
+    document.body.removeChild(textarea);
+}
+
+// Show success message
+function showCopySuccess() {
+    // Create temporary success message
+    const message = document.createElement('div');
+    message.innerHTML = `
+        <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+                    background: #28a745; color: white; padding: 10px 20px; 
+                    border-radius: 8px; z-index: 10000; font-size: 14px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            ✅ Link copied to clipboard!
+        </div>
+    `;
+    document.body.appendChild(message);
+    
+    setTimeout(function() {
+        message.remove();
+    }, 2000);
+}
+
+// Show error message
+function showCopyError() {
+    const message = document.createElement('div');
+    message.innerHTML = `
+        <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+                    background: #dc3545; color: white; padding: 10px 20px; 
+                    border-radius: 8px; z-index: 10000; font-size: 14px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            ❌ Failed to copy. Please copy manually.
+        </div>
+    `;
+    document.body.appendChild(message);
+    
+    setTimeout(function() {
+        message.remove();
+    }, 2000);
+}
+
+
+
+</script>
+{% endif %}
+{% endblock %}

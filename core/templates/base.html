@@ -1,0 +1,251 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Nepixo{% endblock %}</title>
+
+    <meta name="theme-color" content="#ffffff" id="themeColorMeta">
+
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("nepixo-theme");
+            const systemDark =
+                window.matchMedia &&
+                window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+            const theme = savedTheme || (systemDark ? "dark" : "light");
+
+            document.documentElement.dataset.theme = theme;
+        })();
+    </script>
+
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    >
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <header class="navbar{% if not user.is_authenticated %} navbar--guest{% endif %}">
+        <div class="nav-content">
+
+            <a class="logo" href="{% url 'home' %}" aria-label="Nepixo home">
+    <img
+        src="{% static 'images/logo.png' %}"
+        alt="Nepixo logo"
+        class="logo-image"
+    >
+    <span>Nepixo</span>
+</a>
+
+            {% if user.is_authenticated %}
+            <form
+                method="GET"
+                action="{% url 'search' %}"
+                class="search-form"
+                id="searchForm"
+            >
+                <i
+                    class="fa-solid fa-magnifying-glass"
+                    aria-hidden="true"
+                ></i>
+
+                <input
+                    type="search"
+                    name="q"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="Search Nepixo"
+                    autocomplete="off"
+                >
+            </form>
+            {% endif %}
+
+            <nav class="nav-right" aria-label="Primary navigation">
+
+                {% if user.is_authenticated %}
+
+                <a
+                    href="{% url 'home' %}"
+                    class="nav-link"
+                    title="Home"
+                >
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </a>
+
+                <a
+                    href="{% url 'friend_suggestions' %}"
+                    class="nav-link"
+                    title="People"
+                >
+                    <i class="fa-solid fa-user-group"></i>
+                    <span>People</span>
+                </a>
+
+                <a
+    href="{% url 'messages' %}"
+    class="nav-link"
+    title="Messages"
+>
+    <i class="fa-regular fa-comment-dots"></i>
+    <span>Messages</span>
+    <b
+        id="unreadCount"
+        class="badge"
+        aria-label="Unread messages"
+    ></b>
+</a>
+
+<a
+    href="{% url 'notifications' %}"
+    class="nav-link"
+    title="Notifications"
+>
+    <i class="fa-regular fa-bell"></i>
+    <span>Alerts</span>
+    <b
+        id="notificationCount"
+        class="badge"
+        aria-label="Unread notifications"
+    ></b>
+</a>
+
+                <!-- Light / dark mode switch -->
+                <button
+                    class="theme-switch"
+                    id="themeToggle"
+                    type="button"
+                    role="switch"
+                    aria-checked="false"
+                    aria-label="Switch to dark mode"
+                    title="Change theme"
+                ></button>
+
+                <a
+                    href="{% url 'profile' user.username %}"
+                    class="nav-profile"
+                    title="Profile"
+                >
+                    {% if user.profile.profile_pic %}
+                        <img
+                            src="{{ user.profile.profile_pic.url }}"
+                            alt="{{ user.username }}"
+                        >
+                    {% else %}
+                        <span>{{ user.username|first|upper }}</span>
+                    {% endif %}
+                </a>
+                <a
+    href="{% url 'logout' %}"
+    class="mobile-logout"
+    title="Logout"
+>
+    <i class="fa-solid fa-right-from-bracket"></i>
+</a>
+
+                {% else %}
+
+                <button
+    class="theme-switch"
+    id="themeToggle"
+    type="button"
+    role="switch"
+    aria-checked="false"
+    aria-label="Switch to dark mode"
+    title="Change theme"
+></button>
+
+                <a
+                    href="{% url 'login' %}"
+                    class="nav-link guest-link"
+                >
+                    Sign in
+                </a>
+
+                <a
+                    href="{% url 'register' %}"
+                    class="btn btn-primary nav-join"
+                >
+                    Sign up
+                </a>
+
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% if user.is_authenticated %}
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+
+        <a href="{% url 'home' %}">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+
+        <a href="{% url 'search' %}">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Search</span>
+        </a>
+
+        <a href="{% url 'friend_suggestions' %}">
+            <i class="fa-solid fa-user-group"></i>
+            <span>People</span>
+        </a>
+
+        <a href="{% url 'messages' %}">
+            <i class="fa-regular fa-comment-dots"></i>
+            <span>Messages</span>
+        </a>
+
+        <a href="{% url 'profile' user.username %}">
+            <i class="fa-regular fa-user"></i>
+            <span>Profile</span>
+        </a>
+
+    </nav>
+    {% endif %}
+
+    <script src="{% static 'js/base.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

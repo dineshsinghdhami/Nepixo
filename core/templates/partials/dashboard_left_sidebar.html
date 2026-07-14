@@ -1,0 +1,24 @@
+<aside class="home-left">
+    <section class="card profile-summary">
+        <a href="{% url 'profile' user.username %}" class="summary-avatar">
+            {% if user.profile.profile_pic %}<img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}">{% else %}<span>{{ user.username|first|upper }}</span>{% endif %}
+        </a>
+        <div class="summary-copy">
+            <a href="{% url 'profile' user.username %}" class="summary-name">{% if user.first_name or user.last_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}</a>
+            <span>@{{ user.username }}</span>
+        </div>
+        <p class="summary-bio">{{ user.profile.bio|default:"Add a short bio so people know what you are about." }}</p>
+        <div class="profile-stats compact-stats">
+            <a href="{% url 'profile' user.username %}"><strong>{{ follower_count }}</strong><span>Followers</span></a>
+            <a href="{% url 'profile' user.username %}"><strong>{{ following_count }}</strong><span>Following</span></a>
+        </div>
+    </section>
+    <nav class="card side-menu" aria-label="Account navigation">
+        <a href="{% url 'home' %}" class="{% if active_page == 'home' %}active{% endif %}"><i class="fa-solid fa-house"></i>Feed</a>
+        <a href="{% url 'friend_suggestions' %}" class="{% if active_page == 'people' %}active{% endif %}"><i class="fa-solid fa-user-group"></i>Discover people</a>
+        <a href="{% url 'messages' %}" class="{% if active_page == 'messages' %}active{% endif %}"><i class="fa-regular fa-comment-dots"></i>Messages</a>
+        <a href="{% url 'notifications' %}" class="{% if active_page == 'notifications' %}active{% endif %}"><i class="fa-regular fa-bell"></i>Notifications</a>
+        <a href="{% url 'profile' user.username %}"><i class="fa-regular fa-user"></i>Your profile</a>
+        <a href="{% url 'logout' %}"><i class="fa-solid fa-arrow-right-from-bracket"></i>Log out</a>
+    </nav>
+</aside>

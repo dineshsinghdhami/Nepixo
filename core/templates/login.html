@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Nepixo{% endblock %}
+
+{% block content %}
+<div style="
+    width: 100%;
+    height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 16px;
+">
+    <div class="card" style="
+        width: 100%;
+        max-width: 360px;
+        padding: 24px;
+        border-radius: 16px;
+    ">
+        <div style="
+            width: 46px;
+            height: 46px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            color: var(--brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">
+            <i
+                class="fas fa-user"
+                aria-hidden="true"
+                style="font-size: 20px;"
+            ></i>
+        </div>
+
+        <div style="
+            text-align: center;
+            margin-bottom: 18px;
+        ">
+            <h1 style="
+                font-size: 22px;
+                line-height: 1.25;
+                letter-spacing: -.02em;
+                margin-bottom: 6px;
+            ">
+                Welcome back
+            </h1>
+
+            <p style="
+                color: var(--muted);
+                font-size: 13px;
+                line-height: 1.6;
+                max-width: 300px;
+                margin: 0 auto;
+            ">
+                Log in to continue to your Nepixo account.
+            </p>
+        </div>
+
+        <form method="POST" id="loginForm" style="width: 100%;">
+            {% csrf_token %}
+
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label
+                    for="usernameOrEmail"
+                    style="
+                        display: block;
+                        margin-bottom: 7px;
+                        font-size: 13px;
+                        font-weight: 600;
+                    "
+                >
+                    Username or email
+                </label>
+
+                <input
+                    type="text"
+                    id="usernameOrEmail"
+                    name="username_or_email"
+                    class="form-control"
+                    placeholder="Enter username or email"
+                    autocomplete="username"
+                    autofocus
+                    required
+                    style="
+                        width: 100%;
+                        min-width: 0;
+                        height: 42px;
+                        font-size: 16px;
+                    "
+                >
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <div style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    margin-bottom: 7px;
+                ">
+                    <label
+                        for="passwordInput"
+                        style="
+                            display: block;
+                            font-size: 13px;
+                            font-weight: 600;
+                        "
+                    >
+                        Password
+                    </label>
+
+                    <a
+                        href="{% url 'forgot_password' %}"
+                        style="
+                            color: var(--brand);
+                            font-size: 12px;
+                            font-weight: 600;
+                            white-space: nowrap;
+                        "
+                    >
+                        Forgot password?
+                    </a>
+                </div>
+
+                <div style="
+                    position: relative;
+                    width: 100%;
+                ">
+                    <input
+                        type="password"
+                        name="password"
+                        id="passwordInput"
+                        class="form-control"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                        style="
+                            width: 100%;
+                            min-width: 0;
+                            height: 42px;
+                            padding-right: 46px;
+                            font-size: 16px;
+                        "
+                    >
+
+                    <button
+                        type="button"
+                        id="togglePassword"
+                        aria-label="Show password"
+                        aria-pressed="false"
+                        style="
+                            position: absolute;
+                            top: 50%;
+                            right: 8px;
+                            width: 32px;
+                            height: 32px;
+                            padding: 0;
+                            transform: translateY(-50%);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: transparent;
+                            color: var(--muted);
+                            border-radius: 8px;
+                            cursor: pointer;
+                        "
+                    >
+                        <svg
+                            id="eyeOpen"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="19"
+                            height="19"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+
+                        <svg
+                            id="eyeClosed"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="19"
+                            height="19"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                            style="display: none;"
+                        >
+                            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-6.94"/>
+                            <path d="M1 1l22 22"/>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a21.82 21.82 0 0 1-4.88 6.68"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div style="
+                display: flex;
+                align-items: center;
+                margin-bottom: 18px;
+            ">
+                <label style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 9px;
+                    color: var(--muted);
+                    font-size: 13px;
+                    cursor: pointer;
+                    user-select: none;
+                ">
+                    <input
+                        type="checkbox"
+                        name="remember_me"
+                        style="
+                            width: 16px;
+                            height: 16px;
+                            margin: 0;
+                            accent-color: var(--brand);
+                            cursor: pointer;
+                        "
+                    >
+                    <span>Remember me</span>
+                </label>
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                style="
+                    width: 100%;
+                    min-width: 0;
+                    height: 42px;
+                    padding: 0 14px;
+                    font-size: 14px;
+                "
+            >
+                <span>Log in</span>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </button>
+        </form>
+
+        <div style="
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 16px;
+        ">
+            <span style="
+                height: 1px;
+                background: var(--line);
+                flex: 1;
+            "></span>
+
+            <span style="
+                color: var(--muted);
+                font-size: 10px;
+                flex-shrink: 0;
+            ">
+                NEW TO NEPIXO?
+            </span>
+
+            <span style="
+                height: 1px;
+                background: var(--line);
+                flex: 1;
+            "></span>
+        </div>
+
+        <p style="
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        ">
+            Don’t have an account?
+
+            <a
+                href="{% url 'register' %}"
+                style="
+                    color: var(--brand);
+                    font-weight: 600;
+                "
+            >
+                Create an account
+            </a>
+        </p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const passwordInput = document.getElementById('passwordInput');
+    const toggleButton = document.getElementById('togglePassword');
+    const eyeOpen = document.getElementById('eyeOpen');
+    const eyeClosed = document.getElementById('eyeClosed');
+
+    if (!passwordInput || !toggleButton || !eyeOpen || !eyeClosed) {
+        return;
+    }
+
+    toggleButton.addEventListener('click', function () {
+        const passwordIsHidden = passwordInput.type === 'password';
+
+        passwordInput.type = passwordIsHidden ? 'text' : 'password';
+        eyeOpen.style.display = passwordIsHidden ? 'none' : 'block';
+        eyeClosed.style.display = passwordIsHidden ? 'block' : 'none';
+
+        toggleButton.setAttribute(
+            'aria-label',
+            passwordIsHidden ? 'Hide password' : 'Show password'
+        );
+
+        toggleButton.setAttribute(
+            'aria-pressed',
+            passwordIsHidden ? 'true' : 'false'
+        );
+    });
+});
+</script>
+{% endblock %}

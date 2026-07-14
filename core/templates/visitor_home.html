@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nepixo - Connect with Friends{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="landing-page">
+
+   <section class="landing-hero">
+    <div class="hero-content">
+        <h1>A simple place to share and connect.</h1>
+
+        <p class="hero-description">
+            Post updates, follow people you care about, and keep your
+            conversations in one place.
+        </p>
+
+        <div class="hero-actions">
+            <a
+                href="{% url 'register' %}"
+                class="landing-button landing-button-primary"
+            >
+                Create account
+            </a>
+
+            <a
+                href="{% url 'login' %}"
+                class="landing-login-link"
+            >
+                Log in
+            </a>
+        </div>
+    </div>
+
+    <div class="feed-preview">
+        <div class="feed-preview-top">
+            <div class="feed-preview-brand">
+                <img
+                    src="{% static 'images/logo.png' %}"
+                    alt="Nepixo logo"
+                    class="feed-preview-logo"
+                >
+                <strong>Nepixo</strong>
+            </div>
+
+            <span>Latest posts</span>
+        </div>
+
+        <div class="feed-composer">
+            <div class="preview-avatar">D</div>
+            <span>Share something...</span>
+        </div>
+
+        <article class="preview-post">
+            <header class="preview-post-header">
+                <div class="preview-avatar preview-avatar-dark">
+                    D
+                </div>
+
+                <div class="preview-user">
+                    <strong>Dinesh Singh Dhami</strong>
+                    <span>@dineshsinghdhami · 8m</span>
+                </div>
+
+                <button type="button" aria-label="Post options">
+                    <i
+                        class="fa-solid fa-ellipsis"
+                        aria-hidden="true"
+                    ></i>
+                </button>
+            </header>
+
+            <p>
+                Finally finished the small project I have been working
+                on this week.
+            </p>
+
+            <footer class="preview-post-actions">
+                <span>
+                    <i
+                        class="fa-regular fa-heart"
+                        aria-hidden="true"
+                    ></i>
+                    18
+                </span>
+
+                <span>
+                    <i
+                        class="fa-regular fa-comment"
+                        aria-hidden="true"
+                    ></i>
+                    4
+                </span>
+
+                <span>
+                    <i
+                        class="fa-regular fa-bookmark"
+                        aria-hidden="true"
+                    ></i>
+                </span>
+            </footer>
+        </article>
+    </div>
+</section>
+    <section class="landing-features" aria-label="Nepixo features">
+        <article>
+            <i
+                class="fa-regular fa-pen-to-square"
+                aria-hidden="true"
+            ></i>
+
+            <div>
+                <h2>Share updates</h2>
+                <p>
+                    Post your thoughts and keep up with people you follow.
+                </p>
+            </div>
+        </article>
+
+        <article>
+            <i
+                class="fa-regular fa-comments"
+                aria-hidden="true"
+            ></i>
+
+            <div>
+                <h2>Message privately</h2>
+                <p>
+                    Have direct conversations without leaving the platform.
+                </p>
+            </div>
+        </article>
+
+        <article>
+            <i
+                class="fa-regular fa-user"
+                aria-hidden="true"
+            ></i>
+
+            <div>
+                <h2>Meet people</h2>
+                <p>
+                    Find new profiles and build your own community.
+                </p>
+            </div>
+        </article>
+    </section>
+
+    <section class="landing-bottom">
+        <div>
+            <h2>Join Nepixo today.</h2>
+            <p>Create your profile and start sharing.</p>
+        </div>
+
+        <a
+            href="{% url 'register' %}"
+            class="landing-button landing-button-primary"
+        >
+            Get started
+        </a>
+    </section>
+
+</div>
+
+<footer class="site-footer">
+    <div class="site-footer-content">
+
+        <a
+            href="{% url 'home' %}"
+            class="site-footer-brand"
+            aria-label="Nepixo home"
+        >
+            <img
+                src="{% static 'images/logo.png' %}"
+                alt=""
+                class="site-footer-logo"
+            >
+
+            <span>Nepixo</span>
+        </a>
+
+        <p class="site-footer-copy">
+            © {% now "Y" %} Nepixo
+        </p>
+
+        <nav
+            class="site-footer-links"
+            aria-label="Footer navigation"
+        >
+            <a
+                href="https://github.com/dineshsinghdhami"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                GitHub
+            </a>
+
+            <a
+                href="https://www.linkedin.com/in/dineshsinghdhami1/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                LinkedIn
+            </a>
+        </nav>
+
+    </div>
+</footer>
+
+{% endblock %}
