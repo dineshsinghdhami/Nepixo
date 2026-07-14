@@ -122,8 +122,33 @@ html[data-theme="dark"] .theme-switch::before{
     background:#fff;
 }
 
-@media(max-width:760px){
-    .theme-switch{display:none}
+/* Show the theme switch in the top navbar on mobile */
+@media (max-width:760px){
+
+    .nav-right{
+        display:flex;
+        align-items:center;
+        justify-content:flex-end;
+        gap:8px;
+    }
+
+    .theme-switch{
+        display:inline-block;
+        width:36px;
+        height:20px;
+        margin:0;
+    }
+
+    .theme-switch::before{
+        top:2px;
+        left:2px;
+        width:14px;
+        height:14px;
+    }
+
+    html[data-theme="dark"] .theme-switch::before{
+        left:18px;
+    }
 }
 
 .avatar{
