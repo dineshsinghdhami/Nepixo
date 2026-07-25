@@ -6,15 +6,14 @@
 
 **Nepixo** is a simple **social media web application** built using **Django** and **SQLite**, allowing users to share posts, follow others, chat privately, and receive notifications through a clean and intuitive interface.
 
-
-## # Project Background
+## Project Background
 
 During a period when social media platforms were temporarily restricted in Nepal, I created **Nepixo** as an independent web-based platform to stay connected and explore how social networking systems work from the ground up.
 
 This project reflects both a practical solution to a real-world situation and my hands-on experience in building a full-featured social media application from scratch.
 
 > **Note:** This project is **NOT open source**.  
-> All code, files, and designs are fully protected and may not be copied or reused.
+> All source code, files, assets, and designs are proprietary and protected by copyright law. Unauthorized copying, modification, distribution, or reuse is strictly prohibited.
 
 ---
 
@@ -26,7 +25,7 @@ This project reflects both a practical solution to a real-world situation and my
 
 ---
 
-## # Features
+## Features
 
 - Secure user authentication system
 - User profiles with profile pictures
@@ -40,13 +39,13 @@ This project reflects both a practical solution to a real-world situation and my
 
 ---
 
-## # Live Demo
+## Live Demo
 
 **Website:** https://nepixo.pythonanywhere.com/
 
 ---
 
-## # Tech Stack
+## Tech Stack
 
 - **Backend:** Django (Python)
 - **Frontend:** HTML, CSS, Bootstrap
@@ -58,7 +57,7 @@ This project reflects both a practical solution to a real-world situation and my
 
 ---
 
-## # Project Structure
+## Project Structure
 
 ```text
 Nepixo/
@@ -66,8 +65,8 @@ Nepixo/
 ├── socialmedia/
 ├── media/
 ├── static/
-│   └── image/
-│       └── dashboard.png
+│   └── images/
+│       └── Dashboard.png
 ├── staticfiles/
 ├── templates/
 ├── manage.py
@@ -77,26 +76,29 @@ Nepixo/
 
 ---
 
-## # License (Proprietary — All Rights Reserved)
+## 📄 License (Proprietary — All Rights Reserved)
 
-This project is **100% proprietary**.
+This project is proprietary software. **All rights are reserved by the author.**
 
-You are **NOT allowed** to:
+You are **NOT permitted** to:
 
-- Copy this code
-- Modify or reuse any part
-- Redistribute or publish it
-- Use it in personal or commercial projects
-- Reverse-engineer or extract logic
-- Upload it anywhere online
+- Copy or reproduce any part of the source code
+- Modify or reuse any part of this project
+- Redistribute, republish, or upload this project to any platform
+- Use the source code, assets, or designs in personal, academic, or commercial projects
+- Reverse-engineer, decompile, or create derivative works
 
-For special permissions, contact the owner directly.
+> **⚠️ Unauthorized copying, modification, distribution, publication, or reuse of this project's source code, assets, or designs constitutes copyright infringement and may result in legal action, including claims for damages, injunctive relief, and any other remedies available under applicable copyright and intellectual property laws.**
 
-The full legal text is available in the [LICENSE](LICENSE.md) file.
+No license or permission is granted to use this project without the **prior written consent** of the copyright owner.
+
+For licensing inquiries or special permission, please contact the author directly.
+
+The complete legal terms are available in the [LICENSE](LICENSE.md) file.
 
 ---
 
-## # Contributions
+## Contributions
 
 External contributions are **not accepted**.
 
@@ -107,6 +109,6 @@ This project is privately owned and maintained solely by the author.
 ## Author
 
 **Dinesh Singh Dhami**  
-**Website:** https://dineshsinghdhami.com.np  
-**GitHub:** https://github.com/dineshsinghdhami  
-**Email:** dineshdhamidn@gmail.com
+🌐 **Website:** https://dineshsinghdhami.com.np  
+💻 **GitHub:** https://github.com/dineshsinghdhami  
+📧 **Email:** dineshdhamidn@gmail.com
