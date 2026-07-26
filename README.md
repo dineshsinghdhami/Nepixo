@@ -1,4 +1,4 @@
-# Nepixo
+# # Nepixo
 
 ![License](https://img.shields.io/badge/license-Proprietary-red)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
@@ -6,7 +6,7 @@
 
 **Nepixo** is a simple **social media web application** built using **Django** and **SQLite**, allowing users to share posts, follow others, chat privately, and receive notifications through a clean and intuitive interface.
 
-## Project Background
+## # Project Background
 
 During a period when social media platforms were temporarily restricted in Nepal, I created **Nepixo** as an independent web-based platform to stay connected and explore how social networking systems work from the ground up.
 
@@ -17,7 +17,7 @@ This project reflects both a practical solution to a real-world situation and my
 
 ---
 
-## 📸 Screenshot
+## # Screenshot
 
 <p align="center">
   <img src="static/images/Dashboard.png" alt="Nepixo Dashboard" width="900">
@@ -25,7 +25,7 @@ This project reflects both a practical solution to a real-world situation and my
 
 ---
 
-## Features
+## # Features
 
 - Secure user authentication system
 - User profiles with profile pictures
@@ -39,13 +39,13 @@ This project reflects both a practical solution to a real-world situation and my
 
 ---
 
-## Live Demo
+## # Live Demo
 
 **Website:** https://nepixo.pythonanywhere.com/
 
 ---
 
-## Tech Stack
+## # Tech Stack
 
 - **Backend:** Django (Python)
 - **Frontend:** HTML, CSS, Bootstrap
@@ -57,7 +57,7 @@ This project reflects both a practical solution to a real-world situation and my
 
 ---
 
-## Project Structure
+## # Project Structure
 
 ```text
 Nepixo/
@@ -76,7 +76,7 @@ Nepixo/
 
 ---
 
-## 📄 License (Proprietary — All Rights Reserved)
+## # License (Proprietary — All Rights Reserved)
 
 This project is proprietary software. **All rights are reserved by the author.**
 
@@ -98,7 +98,7 @@ The complete legal terms are available in the [LICENSE](LICENSE.md) file.
 
 ---
 
-## Contributions
+## # Contributions
 
 External contributions are **not accepted**.
 
@@ -106,7 +106,7 @@ This project is privately owned and maintained solely by the author.
 
 ---
 
-## Author
+## # Author
 
 **Dinesh Singh Dhami**  
 🌐 **Website:** https://dineshsinghdhami.com.np  
